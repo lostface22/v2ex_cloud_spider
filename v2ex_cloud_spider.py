@@ -34,7 +34,7 @@ def get_all_links(pages):
             links.append(link)
     return links
 
-def get_words(pages=1):
+def get_words(keywords='all',pages=1):
     user_agent='Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
     headers={'User-Agent':user_agent}
     links=get_all_links(pages)
@@ -48,34 +48,82 @@ def get_words(pages=1):
         url='https://www.v2ex.com{link}'.format(link=i)
         tiezi=requests.get(url,headers=headers)
         opt_tiezi=bs(tiezi.text)
-        try:           
-            post=opt_tiezi.find('div',class_='markdown_body').get_text()
-            pw=jieba.lcut(post)
-            s1=SnowNLP(post)
-            post_sens=s1.sentiments
-            post_sen.append(post_sens)
-            for post_word in pw:
-                post_words.append(post_word)                
-        except:
-            continue
-        try:
-            header=opt_tiezi.find('div',class_='header').find('h1').get_text()
-            hw=jieba.lcut(header)
-            s2=SnowNLP(header)
-            header_sens=s2.sentiments
-            header_sen.append(header_sens)
-            for header_word in hw:
-                header_words.append(post_word) 
-        except:
-            continue
-        replys=opt_tiezi.find_all('div',class_='reply_content')
-        for reply in replys:
-            reply=reply.get_text()
-            s3=SnowNLP(reply)
-            reply_sens=s3.sentiments
-            reply_sen.append(reply_sens)
-            rw=jieba.lcut(reply)
-            for reply_word in rw:
-                reply_words.append(reply_word)
+        if keywords=='all':
+            try:         
+                post=opt_tiezi.find('div',class_='markdown_body').get_text()
+                pw=jieba.lcut(post)
+                s1=SnowNLP(post)
+                post_sens=s1.sentiments
+                post_sen.append(post_sens)
+                for post_word in pw:
+                    post_words.append(post_word)
+            except:
+               continue
+            try:
+                header=opt_tiezi.find('div',class_='header').find('h1').get_text()
+                hw=jieba.lcut(header)
+                s2=SnowNLP(header)
+                header_sens=s2.sentiments
+                header_sen.append(header_sens)
+                for header_word in hw:
+                    header_words.append(post_word)
+            except:
+                continue
+            replys=opt_tiezi.find_all('div',class_='reply_content')
+            for reply in replys:
+                reply=reply.get_text()
+                s3=SnowNLP(reply)
+                reply_sens=s3.sentiments
+                reply_sen.append(reply_sens)
+                rw=jieba.lcut(reply)
+                for reply_word in rw:
+                    reply_words.append(reply_word)
+        else:
+            try:
+                post=opt_tiezi.find('div',class_='markdown_body').get_text()
+                pw=jieba.lcut(post)
+                a=0
+                for keyword in keywords:
+                    if keyword in pw:
+                        a=1
+                if a==1:
+                    for post_word in pw:
+                        post_words.append(post_word)
+                    s1=SnowNLP(post)
+                    post_sens=s1.sentiments
+                    post_sen.append(post_sens)
+            except:
+                continue
+            
+            try:
+                header=opt_tiezi.find('div',class_='header').find('h1').get_text()
+                hw=jieba.lcut(header)
+                b=0
+                for keyword in keywords:
+                    if keyword in hw:
+                        b=1
+                if b==1:              
+                    for header_word in hw:
+                        header_words.append(post_word)    
+                    s2=SnowNLP(header)
+                    header_sens=s2.sentiments
+                    header_sen.append(header_sens)
+            except:
+                continue
+            
+            replys=opt_tiezi.find_all('div',class_='reply_content')
+            c=0
+            for reply in replys:
+                reply=reply.get_text()
+                rw=jieba.lcut(reply)
+                for keyword in keywords:
+                    if keyword in hw:
+                        c=1
+                if c==1:
+                    for reply_word in rw:
+                        reply_words.append(reply_word)                           
+                    s3=SnowNLP(reply)
+                    reply_sens=s3.sentiments
+                    reply_sen.append(reply_sens)             
         time.sleep(random.random())
     return(post_words,header_words,reply_words,post_sen,header_sen,reply_sen)
