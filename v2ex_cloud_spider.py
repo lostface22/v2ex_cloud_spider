@@ -19,6 +19,7 @@ jieba.add_word('华为云')
 jieba.add_word('京东云')
 jieba.add_word('美团云')
 jieba.add_word('出海')
+#jieba中添加专有词汇
 
 def get_all_links(pages):
     links=[]
@@ -33,6 +34,7 @@ def get_all_links(pages):
             link=j.find('a').attrs['href']
             links.append(link)
     return links
+#获取v2ex cloud channel的所有链接
 
 def get_words(keywords='all',pages=1):
     user_agent='Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
@@ -49,6 +51,7 @@ def get_words(keywords='all',pages=1):
         tiezi=requests.get(url,headers=headers)
         opt_tiezi=bs(tiezi.text)
         if keywords=='all':
+		#如果没有选择关键词
             try:         
                 post=opt_tiezi.find('div',class_='markdown_body').get_text()
                 pw=jieba.lcut(post)
@@ -59,6 +62,7 @@ def get_words(keywords='all',pages=1):
                     post_words.append(post_word)
             except:
                continue
+			#主题内容抓取
             try:
                 header=opt_tiezi.find('div',class_='header').find('h1').get_text()
                 hw=jieba.lcut(header)
@@ -69,6 +73,7 @@ def get_words(keywords='all',pages=1):
                     header_words.append(post_word)
             except:
                 continue
+			#标题内容抓取
             replys=opt_tiezi.find_all('div',class_='reply_content')
             for reply in replys:
                 reply=reply.get_text()
@@ -78,7 +83,10 @@ def get_words(keywords='all',pages=1):
                 rw=jieba.lcut(reply)
                 for reply_word in rw:
                     reply_words.append(reply_word)
+			#回复内容抓取
+			
         else:
+		#如果选择了关键词
             try:
                 post=opt_tiezi.find('div',class_='markdown_body').get_text()
                 pw=jieba.lcut(post)
@@ -125,5 +133,6 @@ def get_words(keywords='all',pages=1):
                     s3=SnowNLP(reply)
                     reply_sens=s3.sentiments
                     reply_sen.append(reply_sens)             
-        time.sleep(random.random())
+        time.sleep(random.random()*2)
+		#停止时间不确定，以免被反爬虫软件探测
     return(post_words,header_words,reply_words,post_sen,header_sen,reply_sen)
