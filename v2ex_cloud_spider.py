@@ -39,8 +39,11 @@ def get_words(pages=1):
     headers={'User-Agent':user_agent}
     links=get_all_links(pages)
     post_words=[]
+    post_sen=[]
     header_words=[]
+    header_sen=[]
     reply_words=[]
+    reply_sen=[]
     for i in links:
         url='https://www.v2ex.com{link}'.format(link=i)
         tiezi=requests.get(url,headers=headers)
@@ -48,6 +51,9 @@ def get_words(pages=1):
         try:           
             post=opt_tiezi.find('div',class_='markdown_body').get_text()
             pw=jieba.lcut(post)
+            s1=SnowNLP(post)
+            post_sens=s1.sentiments
+            post_sen.append(post_sens)
             for post_word in pw:
                 post_words.append(post_word)                
         except:
@@ -55,6 +61,9 @@ def get_words(pages=1):
         try:
             header=opt_tiezi.find('div',class_='header').find('h1').get_text()
             hw=jieba.lcut(header)
+            s2=SnowNLP(header)
+            header_sens=s2.sentiments
+            header_sen.append(header_sens)
             for header_word in hw:
                 header_words.append(post_word) 
         except:
@@ -62,8 +71,11 @@ def get_words(pages=1):
         replys=opt_tiezi.find_all('div',class_='reply_content')
         for reply in replys:
             reply=reply.get_text()
+            s3=SnowNLP(reply)
+            reply_sens=s3.sentiments
+            reply_sen.append(reply_sens)
             rw=jieba.lcut(reply)
             for reply_word in rw:
                 reply_words.append(reply_word)
         time.sleep(random.random())
-    return(post_words,header_words,reply_words)
+    return(post_words,header_words,reply_words,post_sen,header_sen,reply_sen)
