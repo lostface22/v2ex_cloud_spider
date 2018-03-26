@@ -74,15 +74,21 @@ def get_words(keywords='all',pages=1):
             except:
                 continue
 			#标题内容抓取
-            replys=opt_tiezi.find_all('div',class_='reply_content')
-            for reply in replys:
-                reply=reply.get_text()
-                s3=SnowNLP(reply)
-                reply_sens=s3.sentiments
-                reply_sen.append(reply_sens)
-                rw=jieba.lcut(reply)
-                for reply_word in rw:
-                    reply_words.append(reply_word)
+            try:
+                replys=opt_tiezi.find_all('div',class_='reply_content')
+                for reply in replys:
+                    try:
+                        reply=reply.get_text()
+                        s3=SnowNLP(reply)
+                        reply_sens=s3.sentiments
+                        reply_sen.append(reply_sens)
+                        rw=jieba.lcut(reply)
+                        for reply_word in rw:
+                            reply_words.append(reply_word)
+                    except:
+                        continue
+            except:
+                continue
 			#回复内容抓取
 			
         else:
@@ -119,20 +125,26 @@ def get_words(keywords='all',pages=1):
             except:
                 continue
             
-            replys=opt_tiezi.find_all('div',class_='reply_content')
-            c=0
-            for reply in replys:
-                reply=reply.get_text()
-                rw=jieba.lcut(reply)
-                for keyword in keywords:
-                    if keyword in hw:
-                        c=1
-                if c==1:
-                    for reply_word in rw:
-                        reply_words.append(reply_word)                           
-                    s3=SnowNLP(reply)
-                    reply_sens=s3.sentiments
-                    reply_sen.append(reply_sens)             
+            try:
+                replys=opt_tiezi.find_all('div',class_='reply_content')
+                c=0
+                for reply in replys:
+                    try:
+                        reply=reply.get_text()
+                        rw=jieba.lcut(reply)
+                        for keyword in keywords:
+                            if keyword in hw:
+                                c=1
+                        if c==1:
+                            for reply_word in rw:
+                                reply_words.append(reply_word)  
+                                s3=SnowNLP(reply)
+                                reply_sens=s3.sentiments
+                                reply_sen.append(reply_sens) 
+                    except:
+                        continue
+            except:
+                continue
         time.sleep(random.random()*2)
 		#停止时间不确定，以免被反爬虫软件探测
     return(post_words,header_words,reply_words,post_sen,header_sen,reply_sen)
