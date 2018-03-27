@@ -34,5 +34,5 @@ def analyze_cloud(keywords='all',pages=1,content='all'):
         sort_words.reverse()
         sen=result[3]+result[4]+result[5]
     plt.hist(sen)
-    return(sort_words)      
+    return(sort_words，sen)      
     
