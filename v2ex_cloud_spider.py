@@ -145,6 +145,6 @@ def get_words(keywords='all',pages=1):
                         continue
             except:
                 continue
-        time.sleep(random.random()*2)
+        time.sleep(random.random()*5)
 		#停止时间不确定，以免被反爬虫软件探测
     return(post_words,header_words,reply_words,post_sen,header_sen,reply_sen)
